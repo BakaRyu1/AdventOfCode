@@ -82,9 +82,7 @@ internal partial class Day24 : DayRunner<Day24.Data>
         machine.Process();
         if (settings.Verbose)
         {
-            var sortedNames = machine.Values.Keys.ToList();
-            sortedNames.Sort();
-            foreach (var name in sortedNames)
+            foreach (var name in machine.Values.Keys.Order())
             {
                 Console.WriteLine($"{name}: {(machine.Values[name] ? 1 : 0)}");
             }
@@ -213,11 +211,6 @@ internal partial class Day24 : DayRunner<Day24.Data>
         }
         Console.WriteLine("Faulty bits: " + string.Join(", ", faultyBits));
         */
-    }
-
-    public override void InitSettings(ref RunSettings settings)
-    {
-        settings.File1 ??= FileReference.Resource(typeof(Day24), settings.Example ? "day24-example.txt" : "day24-input.txt");
     }
 
     private static (string, string)[]? TrySwap(Machine machine, IEnumerable<string> available, IEnumerable<(string, string)> swaps, int remainingSwaps)

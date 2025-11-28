@@ -106,10 +106,6 @@ internal class Day07 : DayRunner<Day07.Hand[]>
         }
         Console.WriteLine("Winnings (with jokers) are " + winnings);
     }
-    public override void InitSettings(ref RunSettings settings)
-    {
-        settings.File1 ??= FileReference.Resource(typeof(Day07), settings.Example ? "day07-example.txt" : "day07-input.txt");
-    }
 
     private static readonly string Cards = "23456789TJQKA";
     private static readonly SearchValues<char> CardValues = SearchValues.Create(Cards);

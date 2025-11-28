@@ -73,11 +73,6 @@ internal class Day23 : DayRunner<(string, string)[]>
         Console.WriteLine("Best set is " + string.Join(',', bestSet));
     }
 
-    public override void InitSettings(ref RunSettings settings)
-    {
-        settings.File1 ??= FileReference.Resource(typeof(Day23), settings.Example ? "day23-example.txt" : "day23-input.txt");
-    }
-
     private static List<string> FindBestSet(Dictionary<string, HashSet<string>> allLinks, List<string> currentSet, IEnumerable<string> potentials)
     {
         if (!potentials.Any())

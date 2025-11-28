@@ -195,10 +195,6 @@ internal class Day06 : DayRunner<Day06.Data>
         }
         Console.WriteLine("Total distinct obstacles: " + obstacles.Data.Count(pos => pos));
     }
-    public override void InitSettings(ref RunSettings settings)
-    {
-        settings.File1 ??= FileReference.Resource(typeof(Day06), settings.Example ? "day06-example.txt" : "day06-input.txt");
-    }
 
     /*
     private static void MarkDirectionsBackward(Data data, Array2D<Direction> directions, Position position, Direction direction)

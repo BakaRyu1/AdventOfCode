@@ -82,11 +82,6 @@ internal class Day20 : DayRunner<Day20.Data>
         Console.WriteLine("Cheats that saves 100 picoseconds (with 20 picoseconds cheats) are " + shortcuts.Count);
     }
 
-    public override void InitSettings(ref RunSettings settings)
-    {
-        settings.File1 ??= FileReference.Resource(typeof(Day20), settings.Example ? "day20-example.txt" : "day20-input.txt");
-    }
-
     private static Array2D<NodeData> GenerateData(Data data, Position start)
     {
         var mapData = new Array2D<NodeData>(data.Map.Width, data.Map.Height);

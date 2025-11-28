@@ -39,11 +39,6 @@ internal class Day11 : DayRunner<Day11.Data>
         Console.WriteLine("Sum of distances (older) is " + sum);
     }
 
-    public override void InitSettings(ref RunSettings settings)
-    {
-        settings.File1 ??= FileReference.Resource(typeof(Day11), settings.Example ? "day11-example.txt" : "day11-input.txt");
-    }
-
     private static IEnumerable<long> EnumerateDistances(Data data, long emptyDistance)
     {
         var galaxies = data.Map.FindPositions(true).ToArray();

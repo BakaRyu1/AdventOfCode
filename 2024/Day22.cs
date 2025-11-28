@@ -99,11 +99,6 @@ internal class Day22 : DayRunner<long[]>
         Console.WriteLine("\t=> Sequence: " + string.Join(",", bestSequence));
     }
 
-    public override void InitSettings(ref RunSettings settings)
-    {
-        settings.File1 ??= FileReference.Resource(typeof(Day22), settings.Example ? "day22-example.txt" : "day22-input.txt");
-    }
-
     private static ulong Mix(ulong secret, ulong value) => secret ^ value;
     private static ulong Prune(ulong secret) => secret % 0x1000000;
     private static ulong NextSecret(ulong secret)

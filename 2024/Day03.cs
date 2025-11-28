@@ -64,10 +64,6 @@ internal partial class Day03 : DayRunner<string>
         }
         Console.WriteLine("Sum of enabled mul: " + sum);
     }
-    public override void InitSettings(ref RunSettings settings)
-    {
-        settings.File1 ??= FileReference.Resource(typeof(Day03), settings.Example ? "day03-example.txt" : "day03-input.txt");
-    }
 
     [GeneratedRegex(@"mul\((?<num1>\d+),(?<num2>\d+)\)", RegexOptions.CultureInvariant)]
     private static partial Regex MulPattern();

@@ -84,11 +84,6 @@ internal class Day16 : DayRunner<Array2D<Day16.State>>
         Console.WriteLine("Best energized count is " + best.tilesEnergized);
     }
 
-    public override void InitSettings(ref RunSettings settings)
-    {
-        settings.File1 ??= FileReference.Resource(typeof(Day16), settings.Example ? "day16-example.txt" : "day16-input.txt");
-    }
-
     private static void PrintMap(Array2D<State> map, Array2D<bool> energized)
     {
         for (var y = 0; y < map.Height; ++y)

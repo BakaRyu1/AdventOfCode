@@ -100,11 +100,6 @@ internal class Day14 : DayRunner<Array2D<Day14.State>>
         Console.WriteLine("Load is " + load);
     }
 
-    public override void InitSettings(ref RunSettings settings)
-    {
-        settings.File1 ??= FileReference.Resource(typeof(Day14), settings.Example ? "day14-example.txt" : "day14-input.txt");
-    }
-
     private static void PrintMap(Array2D<State> map)
     {
         for (var y = 0; y < map.Height; ++y)

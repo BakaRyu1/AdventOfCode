@@ -86,11 +86,6 @@ internal partial class Day15 : DayRunner<string[], Day15.StepInfo[]>
         Console.WriteLine("Focusing power is " + focusingPower);
     }
 
-    public override void InitSettings(ref RunSettings settings)
-    {
-        settings.File1 ??= FileReference.Resource(typeof(Day15), settings.Example ? "day15-example.txt" : "day15-input.txt");
-    }
-
     private static int GetHash(string str)
     {
         var hash = 0;

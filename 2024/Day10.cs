@@ -63,11 +63,6 @@ internal class Day10 : DayRunner<Array2D<int>>
         Console.WriteLine("Sum of ratings is " + sum);
     }
 
-    public override void InitSettings(ref RunSettings settings)
-    {
-        settings.File1 ??= FileReference.Resource(typeof(Day01), settings.Example ? "day10-example.txt" : "day10-input.txt");
-    }
-
     private static void ExploreTrail(Array2D<int> map, Position trailhead, Func<Position, int, bool> func)
     {
         var queue = new Queue<Position>();

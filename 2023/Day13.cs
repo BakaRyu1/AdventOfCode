@@ -88,11 +88,6 @@ internal class Day13 : DayRunner<Array2D<bool>[]>
         Console.WriteLine("Sum of summaries (with smudge) is " + sum);
     }
 
-    public override void InitSettings(ref RunSettings settings)
-    {
-        settings.File1 ??= FileReference.Resource(typeof(Day13), settings.Example ? "day13-example.txt" : "day13-input.txt");
-    }
-
     private static void PrintMirror(Array2D<bool> pattern, int mirrorX, int mirrorY, Position? smudgeX = null, Position? smudgeY = null)
     {
         if (mirrorX >= 0)

@@ -164,11 +164,6 @@ internal partial class Day05 : DayRunner<Day05.Data>
         Console.WriteLine("Lowest location number (with range) is " + lowestLocation);
     }
 
-    public override void InitSettings(ref RunSettings settings)
-    {
-        settings.File1 ??= FileReference.Resource(typeof(Day05), settings.Example ? "day05-example.txt" : "day05-input.txt");
-    }
-
     [GeneratedRegex(@"^\s*seeds\s*:\s*(?<nums>\d+(?:\s+\d+)*)\s*$", RegexOptions.CultureInvariant)]
     private static partial Regex SeedsPattern();
     [GeneratedRegex(@"^\s*(?<id>[a-z]+-to-[a-z]+)\s+map\s*:\s*$", RegexOptions.CultureInvariant)]

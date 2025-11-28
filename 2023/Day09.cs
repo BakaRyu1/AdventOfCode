@@ -41,10 +41,6 @@ internal class Day09 : DayRunner<int[][]>
         }
         Console.WriteLine("Sum of extrapolated previous values is " + sum);
     }
-    public override void InitSettings(ref RunSettings settings)
-    {
-        settings.File1 ??= FileReference.Resource(typeof(Day09), settings.Example ? "day09-example.txt" : "day09-input.txt");
-    }
 
     private static List<int[]> GetDifferenceSequences(int[] initialSequence)
     {

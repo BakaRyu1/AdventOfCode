@@ -81,10 +81,6 @@ internal class Day08 : DayRunner<Array2D<char>>
         var count = antinodes.Data.Count(pos => pos);
         Console.WriteLine("Total antinodes (with resonant harmonics) is " + count);
     }
-    public override void InitSettings(ref RunSettings settings)
-    {
-        settings.File1 ??= FileReference.Resource(typeof(Day08), settings.Example ? "day08-example.txt" : "day08-input.txt");
-    }
 
     private static void PrintMap(Array2D<char> map, Array2D<bool> antinodes)
     {

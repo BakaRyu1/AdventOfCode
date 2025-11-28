@@ -162,10 +162,6 @@ internal class Day09 : DayRunner<Day09.Data>
             Console.WriteLine("Disk: " + string.Join(' ', disk.Take(disk.AsSpan().LastIndexOfAnyExcept(-1) + 1)));
         Console.WriteLine("Filesystem checksum: " + checksum);
     }
-    public override void InitSettings(ref RunSettings settings)
-    {
-        settings.File1 ??= FileReference.Resource(typeof(Day09), settings.Example ? "day09-example.txt" : "day09-input.txt");
-    }
 
     private static int[] InitDisk(Data data)
     {

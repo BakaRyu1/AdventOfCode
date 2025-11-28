@@ -98,11 +98,6 @@ internal class Day21 : DayRunner<Day21.Button[][]>
         Console.WriteLine("Sum of complexities is " + sum);
     }
 
-    public override void InitSettings(ref RunSettings settings)
-    {
-        settings.File1 ??= FileReference.Resource(typeof(Day21), settings.Example ? "day21-example.txt" : "day21-input.txt");
-    }
-
     private static Dictionary<(Button, Button), Button[]> GetTransforms(int depth)
     {
         var dpadData = GetPaths(Dpad);

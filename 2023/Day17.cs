@@ -50,11 +50,6 @@ internal class Day17 : DayRunner<Array2D<int>>
         Console.WriteLine("Best heat (with ultra crucible) is " + mapData[lastPos, lastDir].Heat);
     }
 
-    public override void InitSettings(ref RunSettings settings)
-    {
-        settings.File1 ??= FileReference.Resource(typeof(Day17), settings.Example ? "day17-example.txt" : "day17-input.txt");
-    }
-
     private class NodeData()
     {
         public bool Queued = false;

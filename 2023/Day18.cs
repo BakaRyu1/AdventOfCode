@@ -67,10 +67,6 @@ internal partial class Day18 : DayRunner<Day18.Instruction[]>
         Console.WriteLine("Other count is " + CountSpaces(info));
 
     }
-    public override void InitSettings(ref RunSettings settings)
-    {
-        settings.File1 ??= FileReference.Resource(typeof(Day18), settings.Example ? "day18-example.txt" : "day18-input.txt");
-    }
 
     [GeneratedRegex(@"^\s*(?<dir>[URDL])\s+(?<count>\d+)\s+\(\s*#(?<color>[a-f0-9]{6})\s*\)\s*$", RegexOptions.CultureInvariant)]
     private static partial Regex InstructionPattern();

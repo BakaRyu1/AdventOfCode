@@ -95,10 +95,6 @@ internal class Day05 : DayRunner<Day05.Data>
         }
         Console.WriteLine("Sum of corrected middle pages: " + sum);
     }
-    public override void InitSettings(ref RunSettings settings)
-    {
-        settings.File1 ??= FileReference.Resource(typeof(Day05), settings.Example ? "day05-example.txt" : "day05-input.txt");
-    }
 
     private static bool IsUpdateOrdered(Dictionary<int, HashSet<int>> orderingRules, int[] pages)
     {

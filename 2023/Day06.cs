@@ -126,10 +126,6 @@ internal class Day06 : DayRunner<Day06.Race[], Day06.Race>
         else
             Console.Error.WriteLine("No way to solve race!");
     }
-    public override void InitSettings(ref RunSettings settings)
-    {
-        settings.File1 ??= FileReference.Resource(typeof(Day06), settings.Example ? "day06-example.txt" : "day06-input.txt");
-    }
 
     private static long GetDistance(Race race, long holdingTime)
     {

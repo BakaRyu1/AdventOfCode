@@ -27,7 +27,15 @@ internal abstract class DayRunner<T, U> : IDayRunner
     public abstract U Parse2(FileReference file);
     public abstract void Part1(T data, RunSettings settings);
     public abstract void Part2(U data, RunSettings settings);
-    public abstract void InitSettings(ref RunSettings settings);
+    public virtual void InitSettings(ref RunSettings settings)
+    {
+        if (settings.File1 == null)
+        {
+            var type = GetType();
+            var typeName = type.Name.ToLowerInvariant();
+            settings.File1 = FileReference.Resource(type, settings.Example ? $"{typeName}-example.txt" : $"{typeName}-input.txt");
+        }
+    }
     protected virtual U InternalParse2(FileReference file1, FileReference file2, T? data1)
     {
         Console.WriteLine("Parsing...");

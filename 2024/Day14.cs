@@ -108,11 +108,6 @@ internal partial class Day14 : DayRunner<Day14.RobotInfo[]>
         Console.WriteLine("Time required for drawing: " + seconds + "s");
     }
 
-    public override void InitSettings(ref RunSettings settings)
-    {
-        settings.File1 ??= FileReference.Resource(typeof(Day14), settings.Example ? "day14-example.txt" : "day14-input.txt");
-    }
-
     [GeneratedRegex(@"^\s*p\s*=\s*(?<sx>-?\d+)\s*,\s*(?<sy>-?\d+)\s+v\s*=\s*(?<vx>-?\d+)\s*,\s*(?<vy>-?\d+)\s*$", RegexOptions.CultureInvariant)]
     private static partial Regex LinePattern();
 

@@ -6,7 +6,7 @@ internal class Day11 : DayRunner<long[]>
 {
     public override long[] Parse(FileReference file)
     {
-        return file.GetText().AsSpan().Trim().SplitLongs().ToArray();
+        return [.. file.GetText().AsSpan().Trim().SplitLongs()];
     }
 
     public override void Part1(long[] data, RunSettings settings)
@@ -17,10 +17,6 @@ internal class Day11 : DayRunner<long[]>
     public override void Part2(long[] data, RunSettings settings)
     {
         Process(data, settings, 75);
-    }
-    public override void InitSettings(ref RunSettings settings)
-    {
-        settings.File1 ??= FileReference.Resource(typeof(Day11), settings.Example ? "day11-example.txt" : "day11-input.txt");
     }
 
     private static void Process(long[] data, RunSettings settings, int blinks)

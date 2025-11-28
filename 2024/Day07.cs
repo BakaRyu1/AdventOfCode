@@ -69,10 +69,6 @@ internal class Day07 : DayRunner<Day07.Equation[]>
             Console.WriteLine();
         Console.WriteLine("Sum of possible test values (with concatenation) is " + sum);
     }
-    public override void InitSettings(ref RunSettings settings)
-    {
-        settings.File1 ??= FileReference.Resource(typeof(Day07), settings.Example ? "day07-example.txt" : "day07-input.txt");
-    }
 
     private static bool IsEquationValid(long testValue, long currentValue, IEnumerable<long> numbers)
     {

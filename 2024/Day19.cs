@@ -90,11 +90,6 @@ internal class Day19 : DayRunner<Day19.Data>
         Console.WriteLine("Count of ways: " + count);
     }
 
-    public override void InitSettings(ref RunSettings settings)
-    {
-        settings.File1 ??= FileReference.Resource(typeof(Day19), settings.Example ? "day19-example.txt" : "day19-input.txt");
-    }
-
     private static void PrintTowel(string towel)
     {
         Console.ForegroundColor = ConsoleColor.Black;

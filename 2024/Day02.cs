@@ -78,11 +78,6 @@ internal class Day02 : DayRunner<IEnumerable<int[]>>
         Console.WriteLine("Number of safe reports (with problem dampener): " + safeCount);
     }
 
-    public override void InitSettings(ref RunSettings settings)
-    {
-        settings.File1 ??= FileReference.Resource(typeof(Day02), settings.Example ? "day02-example.txt" : "day02-input.txt");
-    }
-
     private static int[] GetDeltas(IEnumerable<int> levels)
     {
         return levels.Skip(1).Zip(levels, (second, first) => second - first).ToArray();

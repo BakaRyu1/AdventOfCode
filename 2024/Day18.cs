@@ -75,11 +75,6 @@ internal class Day18 : DayRunner<Position[]>
         }
     }
 
-    public override void InitSettings(ref RunSettings settings)
-    {
-        settings.File1 ??= FileReference.Resource(typeof(Day18), settings.Example ? "day18-example.txt" : "day18-input.txt");
-    }
-
     private static int CountSteps(Position size, Dictionary<Position, int> walls, int maxTiming)
     {
         var exitPos = size - (1, 1);

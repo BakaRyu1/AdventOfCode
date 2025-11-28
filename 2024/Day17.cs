@@ -165,11 +165,6 @@ internal partial class Day17 : DayRunner<Day17.Data>
             Console.WriteLine("Failed to find valid value for A.");
     }
 
-    public override void InitSettings(ref RunSettings settings)
-    {
-        settings.File1 ??= FileReference.Resource(typeof(Day17), settings.Example ? "day17-example.txt" : "day17-input.txt");
-    }
-
     private class State(Data data)
     {
         public long A = data.A;

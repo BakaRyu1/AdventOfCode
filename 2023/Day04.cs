@@ -84,10 +84,6 @@ internal partial class Day04 : DayRunner<Day04.CardInfo[]>
         var totalCopies = copies.Sum();
         Console.WriteLine("Total copies is " + totalCopies);
     }
-    public override void InitSettings(ref RunSettings settings)
-    {
-        settings.File1 ??= FileReference.Resource(typeof(Day04), settings.Example ? "day04-example.txt" : "day04-input.txt");
-    }
 
     [GeneratedRegex(@"^\s*Card\s+(?<id>\d+)\s*:\s*(?<winning>\d+(?:\s+\d+)*)\s*\|\s*(?<owned>\d+(?:\s+\d+)*)\s*$", RegexOptions.CultureInvariant)]
     private static partial Regex GamePattern();

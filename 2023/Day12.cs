@@ -98,10 +98,6 @@ internal class Day12 : DayRunner<Day12.RowInfo[]>
         }
         Console.WriteLine("Total possibles: " + total);
     }
-    public override void InitSettings(ref RunSettings settings)
-    {
-        settings.File1 ??= FileReference.Resource(typeof(Day12), settings.Example ? "day12-example.txt" : "day12-input.txt");
-    }
 
     private static string GetStateString(IEnumerable<State> states)
     {

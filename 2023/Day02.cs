@@ -93,10 +93,6 @@ internal partial class Day02 : DayRunner<List<Day02.GameInfo>>
         }
         Console.WriteLine("Sum of powers is " + sum);
     }
-    public override void InitSettings(ref RunSettings settings)
-    {
-        settings.File1 ??= FileReference.Resource(typeof(Day02), settings.Example ? "day02-example.txt" : "day02-input.txt");
-    }
 
     [GeneratedRegex(@"^Game (?<num>\d+): (?<cubes>.*)$", RegexOptions.CultureInvariant)]
     private static partial Regex GamePattern();

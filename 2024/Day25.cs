@@ -59,11 +59,6 @@ internal class Day25 : DayRunner<Array2D<bool>[]>
         
     }
 
-    public override void InitSettings(ref RunSettings settings)
-    {
-        settings.File1 ??= FileReference.Resource(typeof(Day25), settings.Example ? "day25-example.txt" : "day25-input.txt");
-    }
-
     private static int[] GetKeyPins(Array2D<bool> key)
     {
         var heights = new int[key.Width];

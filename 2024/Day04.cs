@@ -128,10 +128,6 @@ internal class Day04 : DayRunner<Array2D<char>>
         }
         Console.WriteLine("X-MAS count is " + count);
     }
-    public override void InitSettings(ref RunSettings settings)
-    {
-        settings.File1 ??= FileReference.Resource(typeof(Day04), settings.Example ? "day04-example.txt" : "day04-input.txt");
-    }
 
     private static bool MatchWord(Array2D<char> wordSearch, string word, int x, int y, int dx, int dy)
     {

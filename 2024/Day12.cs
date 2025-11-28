@@ -64,11 +64,6 @@ internal class Day12 : DayRunner<Array2D<char>>
         Console.WriteLine("Total discounted price is " + price);
     }
 
-    public override void InitSettings(ref RunSettings settings)
-    {
-        settings.File1 ??= FileReference.Resource(typeof(Day12), settings.Example ? "day12-example.txt" : "day12-input.txt");
-    }
-
     private static void PrintRegions(List<Region> regions, Array2D<Region?> regionMap)
     {
         var bgColors = Enum.GetValues<ConsoleColor>();

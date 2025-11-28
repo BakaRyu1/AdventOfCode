@@ -85,11 +85,6 @@ internal class Day16 : DayRunner<Day16.Data>
         Console.WriteLine("Count of tiles of best paths is " + positions.Count);
     }
 
-    public override void InitSettings(ref RunSettings settings)
-    {
-        settings.File1 ??= FileReference.Resource(typeof(Day16), settings.Example ? "day16-example.txt" : "day16-input.txt");
-    }
-
     private static DirectionalArray2D<NodeData> GenerateData(Data data)
     {
         var mapData = new DirectionalArray2D<NodeData>(data.Map.Width, data.Map.Height);

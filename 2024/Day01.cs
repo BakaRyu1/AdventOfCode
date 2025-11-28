@@ -53,10 +53,6 @@ internal partial class Day01 : DayRunner<(List<int>, List<int>)>
 
         Console.WriteLine("Total similarity score is: " + totalScore);
     }
-    public override void InitSettings(ref RunSettings settings)
-    {
-        settings.File1 ??= FileReference.Resource(typeof(Day01), settings.Example ? "day01-example.txt" : "day01-input.txt");
-    }
 
     [GeneratedRegex(@"^\s*(\d+)\s+(\d+)\s*$", RegexOptions.CultureInvariant)]
     public static partial Regex LinePattern();

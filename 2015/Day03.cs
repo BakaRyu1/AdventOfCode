@@ -65,9 +65,4 @@ internal class Day03 : DayRunner<Direction[]>
         var count = map.Data.Count(b => b);
         Console.WriteLine($"Santa delivered to {count} houses.");
     }
-
-    public override void InitSettings(ref RunSettings settings)
-    {
-        settings.File1 ??= FileReference.Resource(typeof(Day03), settings.Example ? "day03-example.txt" : "day03-input.txt");
-    }
 }

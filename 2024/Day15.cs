@@ -127,11 +127,6 @@ internal class Day15 : DayRunner<Day15.Data>
         Console.WriteLine("Sum of gps coordinates (expanded) is " + sum);
     }
 
-    public override void InitSettings(ref RunSettings settings)
-    {
-        settings.File1 ??= FileReference.Resource(typeof(Day15), settings.Example ? "day15-example.txt" : "day15-input.txt");
-    }
-
     private static void PrintMap(Array2D<State> map, Position robotPosition)
     {
         for (var y = 0; y < map.Height; ++y)

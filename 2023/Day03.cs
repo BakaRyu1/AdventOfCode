@@ -52,10 +52,6 @@ internal partial class Day03 : DayRunner<Array2D<char>>
         }
         Console.WriteLine("Sum of part ratios is " + sum);
     }
-    public override void InitSettings(ref RunSettings settings)
-    {
-        settings.File1 ??= FileReference.Resource(typeof(Day03), settings.Example ? "day03-example.txt" : "day03-input.txt");
-    }
 
     private static readonly System.Buffers.SearchValues<char> NonSymbols = System.Buffers.SearchValues.Create("0123456789.");
     private static readonly System.Buffers.SearchValues<char> Digits = System.Buffers.SearchValues.Create("0123456789");

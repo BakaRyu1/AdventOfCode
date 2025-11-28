@@ -120,11 +120,6 @@ internal partial class Day13 : DayRunner<Day13.Data[]>
         Console.WriteLine("Fewest cost (corrected) is " + sum + " tokens");
     }
 
-    public override void InitSettings(ref RunSettings settings)
-    {
-        settings.File1 ??= FileReference.Resource(typeof(Day13), settings.Example ? "day13-example.txt" : "day13-input.txt");
-    }
-
     [GeneratedRegex(@"^\s*(?:Button\s+(?<button>[AB])\s*:\s*X\s*\+\s*(?<x>\d+)\s*,\s*Y\s*\+\s*(?<y>\d+)|Prize\s*:\s*X\s*=\s*(?<x>\d+)\s*,\s*Y\s*=\s*(?<y>\d+))\s*$")]
     private static partial Regex LinePattern();
 
