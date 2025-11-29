@@ -18,51 +18,33 @@ internal class Day03 : DayRunner<Direction[]>
 
     public override void Part1(Direction[] data, RunSettings settings)
     {
-        var map = new Array2D<bool>(1, 1);
+        var houses = new HashSet<Position>();
         var pos = new Position(0, 0);
-        map[0, 0] = true;
+        houses.Add(pos);
         foreach(var direction in data)
         {
             pos += direction.Delta();
-            if (!pos.IsInside(map))
-            {
-                var shift = -pos.Min(Position.Zero);
-                if (shift != Position.Zero)
-                    pos += shift;
-                map = map.AsResized(pos, shift);
-            }
-            map[pos] = true;
+            houses.Add(pos);
         }
-        var count = map.Data.Count(b => b);
+        var count = houses.Count;
         Console.WriteLine($"Santa delivered to {count} houses.");
     }
 
     public override void Part2(Direction[] data, RunSettings settings)
     {
-        var map = new Array2D<bool>(1, 1);
+        var houses = new HashSet<Position>();
         var santaPos = new Position(0, 0);
         var roboPos = new Position(0, 0);
         var roboTurn = false;
-        map[0, 0] = true;
+        houses.Add(santaPos);
         foreach (var direction in data)
         {
             ref var pos = ref (roboTurn ? ref roboPos : ref santaPos);
             pos += direction.Delta();
-            if (!pos.IsInside(map))
-            {
-                var shift = -pos.Min(Position.Zero);
-                if (shift != Position.Zero)
-                {
-                    ref var otherPos = ref (roboTurn ? ref santaPos : ref roboPos);
-                    pos += shift;
-                    otherPos += shift;
-                }
-                map = map.AsResized(pos, shift);
-            }
-            map[pos] = true;
+            houses.Add(pos);
             roboTurn = !roboTurn;
         }
-        var count = map.Data.Count(b => b);
+        var count = houses.Count;
         Console.WriteLine($"Santa delivered to {count} houses.");
     }
 }
