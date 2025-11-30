@@ -8,9 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="2015\*.txt" />
-    <EmbeddedResource Include="2023\*.txt" />
-    <EmbeddedResource Include="2024\*.txt" />
+    <EmbeddedResource Include="input\*\*.txt" />
   </ItemGroup>
 
   <ItemGroup>

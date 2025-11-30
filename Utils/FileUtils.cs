@@ -1,8 +1,9 @@
 ﻿using System.Text;
+using System.Text.RegularExpressions;
 
 namespace AdventOfCode.Utils;
 
-public struct FileReference
+public partial struct FileReference
 {
     public enum FileType
     {
@@ -20,7 +21,8 @@ public struct FileReference
             case FileType.Normal:
                 return File.Open(Name, FileMode.Open);
             case FileType.Resource:
-                var stream = RelatedType?.Assembly.GetManifestResourceStream($"{RelatedType?.Namespace}.{Name}");
+                var path = ResourcePathPattern().Replace(RelatedType?.Namespace ?? "", "AdventOfCode.input._");
+                var stream = RelatedType?.Assembly.GetManifestResourceStream($"{path}.{Name}");
                 return stream
                     ?? throw new FileNotFoundException($"Couldn't find resource {Name} for type {RelatedType?.FullName}");
             default:
@@ -66,6 +68,9 @@ public struct FileReference
         => new() { Name = name, Type = FileType.Normal };
     public static FileReference Resource(Type type, string name)
         => new() { Name = name, Type = FileType.Resource, RelatedType = type };
+
+    [GeneratedRegex(@"^AdventOfCode\._")]
+    private static partial Regex ResourcePathPattern();
 }
 
 internal static class FileUtils
