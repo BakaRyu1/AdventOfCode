@@ -1,4 +1,6 @@
-﻿namespace AdventOfCode.Utils;
+﻿using System.Collections;
+
+namespace AdventOfCode.Utils;
 
 public class Array2D<T> (T[] data, int width, int height)
 {
@@ -188,6 +190,10 @@ public class Array2D<T> (T[] data, int width, int height)
         => InternalData.AsSpan(x + y * Width, length);
     public Span<T> AsSpan(int x, int y)
         => InternalData.AsSpan(x + y * Width, Width - x);
+    public IEnumerable<T> AsEnumerable(int x, int y, int length)
+        => new SubArray<T>(InternalData, x + y * Width, length);
+    public IEnumerable<T> AsEnumerable(int x, int y)
+        => new SubArray<T>(InternalData, x + y * Width, Width - x);
 
     public static Array2D<T> FromSize<U>(Array2D<U> source, T value)
         => new(Enumerable.Repeat(value, source.Width * source.Height), source.Width, source.Height);
@@ -211,4 +217,66 @@ public class Array2D<T> (T[] data, int width, int height)
         => new(source.Aggregate(Enumerable.Empty<char>(), (a, b) => a.Concat(b)).Select(transform), source[0].Length, source.Count);
     public static Array2D<char> From(IList<string> source)
         => new(source.Aggregate(Enumerable.Empty<char>(), (a, b) => a.Concat(b)), source[0].Length, source.Count);
+}
+
+internal class SubArray<T>(T[] baseArray, int offset, int length) : IList<T>, IEnumerable<T>, IList, IEnumerable
+{
+    public T[] BaseArray { get; } = baseArray;
+    public int Offset { get; } = offset;
+    public int Length { get; } = length;
+
+    public T this[int index] { get => BaseArray[Offset + CheckBounds(index)]; set => BaseArray[Offset + CheckBounds(index)] = value; }
+    object? IList.this[int index] { get => BaseArray.GetValue(Offset + CheckBounds(index)); set => BaseArray.SetValue(value, Offset + CheckBounds(index)); }
+    public int Count => Length;
+    public bool IsReadOnly => false;
+    public bool IsFixedSize => true;
+    public bool IsSynchronized => false;
+    public object SyncRoot => BaseArray;
+
+    private int CheckBounds(int bounds)
+    {
+        if (bounds < 0 || bounds > Length)
+            throw new IndexOutOfRangeException();
+        return bounds;
+    }
+
+    public IEnumerator<T> GetEnumerator() => new Enumerator(this);
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+    public bool Contains(T item) => Array.IndexOf(BaseArray, item, Offset, Length) >= BaseArray.GetLowerBound(0);
+    public bool Contains(object? value) => Array.IndexOf(BaseArray, value, Offset, Length) >= BaseArray.GetLowerBound(0);
+    public int IndexOf(T item) => Array.IndexOf(BaseArray, item, Offset, Length);
+    public int IndexOf(object? value) => Array.IndexOf(BaseArray, value, Offset, Length);
+    public void CopyTo(T[] array, int arrayIndex) => Array.Copy(BaseArray, Offset, array, arrayIndex, Length);
+    public void CopyTo(Array array, int index) => Array.Copy(BaseArray, Offset, array, index, Length);
+    public void Insert(int index, T item) => throw new NotSupportedException();
+    public void Insert(int index, object? value) => throw new NotSupportedException();
+    public void Add(T item) => throw new NotSupportedException();
+    public int Add(object? value) => throw new NotSupportedException();
+    public bool Remove(T item) => throw new NotSupportedException();
+    public void RemoveAt(int index) => throw new NotSupportedException();
+    public void Remove(object? value) => throw new NotSupportedException();
+    public void Clear() => throw new NotSupportedException();
+
+    private class Enumerator(SubArray<T> parent) : IEnumerator<T>, IEnumerator
+    {
+        private SubArray<T> Parent = parent;
+        private int Index = -1;
+        public T Current => Parent[Index];
+        object? IEnumerator.Current => Current;
+
+        public void Dispose() { }
+
+        public bool MoveNext()
+        {
+            if (Index < Parent.Length)
+            {
+                ++Index;
+                return Index < Parent.Length;
+            }
+            else
+                return false;
+        }
+        public void Reset() => Index = -1;
+    }
 }
