@@ -1,10 +1,4 @@
 ﻿using AdventOfCode.Utils;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AdventOfCode._2025;
 internal class Day04 : DayRunner<Array2D<bool>>

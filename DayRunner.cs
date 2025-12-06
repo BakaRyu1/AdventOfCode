@@ -10,11 +10,10 @@ internal interface IDayRunner
 
 internal abstract class DayRunner<T> : DayRunner<T, T>
 {
-    //protected virtual bool ForceParse2 { get => false; }
     public override T Parse2(FileReference file) => Parse(file);
     protected override T InternalParse2(FileReference file1, FileReference file2, T? data1)
     {
-        if (/*ForceParse2 ||*/ data1 == null|| !file1.Equals(file2))
+        if (data1 == null|| !file1.Equals(file2))
         {
             return base.InternalParse2(file1, file2, data1);
         }
