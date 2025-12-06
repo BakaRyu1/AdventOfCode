@@ -183,9 +183,18 @@ public class Array2D<T> (T[] data, int width, int height)
         if (shift.X == 0 && shift.Y == 0 && newWidth <= Width && newHeight <= Height)
             return new(InternalData, Width, Height);
         return AsResized(newWidth, newHeight, shift);
-
     }
 
+    public Array2D<T> AsTransposed()
+    {
+        var newArray = new Array2D<T>(Height, Width);
+        foreach (var pos in EnumeratePositions())
+            newArray[pos.Y, pos.X] = this[pos];
+        return newArray;
+    }
+
+    public T[][] To2DArray()
+        => [.. Enumerable.Range(0, Height).Select(y => AsSpan(0, y).ToArray())];
     public Span<T> AsSpan(int x, int y, int length)
         => InternalData.AsSpan(x + y * Width, length);
     public Span<T> AsSpan(int x, int y)
