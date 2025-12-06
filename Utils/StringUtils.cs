@@ -13,7 +13,10 @@ internal static partial class StringUtils
         var list = new List<int>();
         foreach (var range in input.Split(separator))
         {
-            list.Add(input[range].ToInt());
+            var span = input[range];
+            if (span.IsEmpty)
+                continue;
+            list.Add(span.ToInt());
         }
         return list;
     }
@@ -22,7 +25,10 @@ internal static partial class StringUtils
         var list = new List<int>();
         foreach (var range in separator.EnumerateSplits(input))
         {
-            list.Add(input[range].ToInt());
+            var span = input[range];
+            if (span.IsEmpty)
+                continue;
+            list.Add(span.ToInt());
         }
         return list;
     }
@@ -33,7 +39,10 @@ internal static partial class StringUtils
         var list = new List<long>();
         foreach (var range in input.Split(separator))
         {
-            list.Add(input[range].ToLong());
+            var span = input[range];
+            if (span.IsEmpty)
+                continue;
+            list.Add(span.ToLong());
         }
         return list;
     }
@@ -42,7 +51,10 @@ internal static partial class StringUtils
         var list = new List<long>();
         foreach (var range in separator.EnumerateSplits(input))
         {
-            list.Add(input[range].ToLong());
+            var span = input[range];
+            if (span.IsEmpty)
+                continue;
+            list.Add(span.ToLong());
         }
         return list;
     }
@@ -56,6 +68,8 @@ internal static partial class StringUtils
             var span = input[range];
             if (trim)
                 span = span.Trim();
+            if (span.IsEmpty)
+                continue;
             list.Add(span.ToString());
         }
         return list;
@@ -68,6 +82,8 @@ internal static partial class StringUtils
             var span = input[range];
             if (trim)
                 span = span.Trim();
+            if (span.IsEmpty)
+                continue;
             list.Add(span.ToString());
         }
         return list;
