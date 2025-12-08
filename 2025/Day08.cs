@@ -26,9 +26,7 @@ internal class Day08 : DayRunner<Position3D[]>
         {
             ConnectJunctions(p1, p2, connections, circuits);
             if (settings.Verbose)
-            {
                 Console.WriteLine($"Connecting {p1}-{p2} ({d}) in circuit of size {connections[p1].Count}");
-            }
         }
         if (settings.Verbose)
         {
@@ -67,7 +65,7 @@ internal class Day08 : DayRunner<Position3D[]>
     {
         foreach (var (i, p1) in points.Index())
         {
-            foreach (var p2 in points.Skip(i +1))
+            foreach (var p2 in points.Skip(i + 1))
             {
                 yield return (p1, p2, p1.DistanceSquared(p2));
             }
