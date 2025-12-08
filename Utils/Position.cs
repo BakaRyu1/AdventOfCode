@@ -19,6 +19,14 @@ public struct LongPosition(long x, long y)
         => (X >= 0 && Y >= 0 && X < map.Width && Y < map.Height);
     public readonly LongPosition Abs()
         => new(Math.Abs(X), Math.Abs(Y));
+    public readonly LongPosition Min(LongPosition right) => new(Math.Min(X, right.X), Math.Min(Y, right.Y));
+    public readonly LongPosition Max(LongPosition right) => new(Math.Max(X, right.X), Math.Max(Y, right.Y));
+    public readonly double DistanceSquared(LongPosition right)
+    {
+        var vec = this - right;
+        return (double)vec.X * vec.X + (double)vec.Y * vec.Y;
+    }
+    public readonly double Distance(LongPosition right) => Math.Sqrt(DistanceSquared(right));
     public readonly void Deconstruct(out long x, out long y)
     {
         x = X;
@@ -34,6 +42,7 @@ public struct LongPosition(long x, long y)
     public static LongPosition operator +(LongPosition left, Direction right) => left + right.Delta();
     public static implicit operator LongPosition((long, long) pos) => new(pos.Item1, pos.Item2);
     public static implicit operator LongPosition(Position pos) => new(pos.X, pos.Y);
+    public static explicit operator LongPosition(Position3D pos) => new(pos.X, pos.Y);
 }
 [DebuggerDisplay("X = {X} Y = {Y}")]
 public struct Position(int x, int y)
@@ -55,6 +64,12 @@ public struct Position(int x, int y)
         => new(Math.Abs(X), Math.Abs(Y));
     public readonly Position Min(Position right) => new(Math.Min(X, right.X), Math.Min(Y, right.Y));
     public readonly Position Max(Position right) => new(Math.Max(X, right.X), Math.Max(Y, right.Y));
+    public readonly double DistanceSquared(Position right)
+    {
+        var vec = this - right;
+        return (double)vec.X * vec.X + (double)vec.Y * vec.Y;
+    }
+    public readonly double Distance(Position right) => Math.Sqrt(DistanceSquared(right));
     public readonly void Deconstruct(out int x, out int y)
     {
         x = X;
@@ -73,4 +88,5 @@ public struct Position(int x, int y)
     public static implicit operator Position((int, int) pos) => new(pos.Item1, pos.Item2);
     public static explicit operator Position(Direction direction) => direction.Delta();
     public static explicit operator Position(LongPosition pos) => new((int)pos.X, (int)pos.Y);
+    public static explicit operator Position(Position3D pos) => new(pos.X, pos.Y);
 }
