@@ -2,37 +2,32 @@
 
 namespace AdventOfCode.Utils;
 
-public class Array2D<T> (T[] data, int width, int height)
+public abstract class BaseArray2D<T>(int width, int height)
 {
-    private readonly T[] InternalData = CheckLength(data, width * height);
-    public T[] Data { get => InternalData; }
     public int Width { get; private set; } = width;
     public int Height { get; private set; } = height;
 
-    public Array2D(int width, int height) : this(new T[width * height], width, height) {}
-    public Array2D(IEnumerable<T> data, int width, int height) : this([.. data.Take(width * height)], width, height) { }
-
-    public T this[int x, int y]
-    {
-        get => InternalData[x + y * Width];
-        set => InternalData[x + y * Width] = value;
-    }
+    public abstract IEnumerable<T> Data { get; }
+    protected abstract int IndexOfData(T value, int startAt);
+    protected abstract int FindDataIndex(Predicate<T> pred, int startAt);
+    public abstract T this[int x, int y] { get; set; }
     public T this[Position position]
     {
-        get => InternalData[position.X + position.Y * Width];
-        set => InternalData[position.X + position.Y * Width] = value;
+        get => this[position.X, position.Y];
+        set => this[position.X, position.Y] = value;
     }
+
     public override int GetHashCode()
     {
         var hashCode = new HashCode();
-        foreach (var item in InternalData)
+        foreach (var item in Data)
             hashCode.Add(item);
         return hashCode.ToHashCode();
     }
     public override bool Equals(object? obj)
     {
         if (obj is Array2D<T> other)
-            return Enumerable.SequenceEqual(InternalData, other.InternalData);
+            return Enumerable.SequenceEqual(Data, other.Data);
         return false;
     }
 
@@ -51,22 +46,17 @@ public class Array2D<T> (T[] data, int width, int height)
         return result;
     }
     */
-    private static T[] CheckLength(T[] data, int length)
-    {
-        if (data.Length < length)
-            throw new ArgumentException("data");
-        return data;
-    }
 
     public void ForEach(Action<int, int, T> func)
     {
-        int i = 0;
+        var enumerator = Data.GetEnumerator();
         for (int y = 0; y < Height; ++y)
         {
             for (int x = 0; x < Width; ++x)
             {
-                func(x, y, InternalData[i]);
-                ++i;
+                if (!enumerator.MoveNext())
+                    throw new InvalidOperationException("Data ended early");
+                func(x, y, enumerator.Current);
             }
         }
     }
@@ -78,14 +68,14 @@ public class Array2D<T> (T[] data, int width, int height)
         => new(index % Width, index / Width);
     public Position? IndexOf(T value)
     {
-        var index = Array.IndexOf(InternalData, value);
+        var index = IndexOfData(value, 0);
         if (index < 0)
             return null;
         return PositionAt(index);
     }
     public Position? IndexOf(T value, Position start)
     {
-        var index = Array.IndexOf(InternalData, value, IndexAt(start));
+        var index = IndexOfData(value, IndexAt(start));
         if (index < 0)
             return null;
         return PositionAt(index);
@@ -93,7 +83,7 @@ public class Array2D<T> (T[] data, int width, int height)
     public Position? FindIndex(Predicate<T> match)
     {
         
-        var index = Array.FindIndex(InternalData, match);
+        var index = FindDataIndex(match, 0);
         if (index < 0)
             return null;
         return PositionAt(index);
@@ -157,13 +147,40 @@ public class Array2D<T> (T[] data, int width, int height)
     }
     public IEnumerable<Position> FindPositions(T value)
     {
-        var index = Array.IndexOf(InternalData, value);
+        var index = IndexOfData(value, 0);
         while (index >= 0)
         {
             yield return PositionAt(index);
-            index = Array.IndexOf(InternalData, value, index + 1);
+            index = IndexOfData(value, index + 1);
         }
     }
+}
+
+public sealed class Array2D<T>(T[] data, int width, int height) : BaseArray2D<T>(width, height)
+{
+    private readonly T[] InternalData = CheckLength(data, (long)width * height);
+    public override T[] Data => InternalData;
+
+
+    public Array2D(int width, int height) : this(new T[width * height], width, height) { }
+    public Array2D(IEnumerable<T> data, int width, int height) : this([.. data.Take(width * height)], width, height) { }
+
+    protected override int IndexOfData(T value, int startIndex) => Array.IndexOf(InternalData, value, startIndex);
+    protected override int FindDataIndex(Predicate<T> pred, int startIndex) => Array.FindIndex(InternalData, startIndex, pred);
+
+    public override T this[int x, int y]
+    {
+        get => InternalData[x + y * Width];
+        set => InternalData[x + y * Width] = value;
+    }
+
+    private static T[] CheckLength(T[] data, long length)
+    {
+        if (data.LongLength < length)
+            throw new ArgumentException("Array backing data doesn't match dimensions", nameof(data));
+        return data;
+    }
+
     public Array2D<T> AsResized(int width, int height, Position shift = default)
     {
         var newArray = new Array2D<T>(width, height);
@@ -180,8 +197,6 @@ public class Array2D<T> (T[] data, int width, int height)
     {
         var newWidth = Math.Max(Width, positionToInclude.X + 1) + shift.X;
         var newHeight = Math.Max(Height, positionToInclude.Y + 1) + shift.Y;
-        if (shift.X == 0 && shift.Y == 0 && newWidth <= Width && newHeight <= Height)
-            return new(InternalData, Width, Height);
         return AsResized(newWidth, newHeight, shift);
     }
 
@@ -204,12 +219,12 @@ public class Array2D<T> (T[] data, int width, int height)
     public IEnumerable<T> AsEnumerable(int x, int y)
         => new SubArray<T>(InternalData, x + y * Width, Width - x);
 
-    public static Array2D<T> FromSize<U>(Array2D<U> source, T value)
+    public static Array2D<T> FromSize<U>(BaseArray2D<U> source, T value)
         => new(Enumerable.Repeat(value, source.Width * source.Height), source.Width, source.Height);
-    public static Array2D<T> From<U>(Array2D<U> source, Func<U, T> transform)
-        => new(source.InternalData.Select(transform), source.Width, source.Height);
-    public static Array2D<T> From(Array2D<T> source)
-        => new([.. source.InternalData], source.Width, source.Height);
+    public static Array2D<T> From<U>(BaseArray2D<U> source, Func<U, T> transform)
+        => new(source.Data.Select(transform), source.Width, source.Height);
+    public static Array2D<T> From(BaseArray2D<T> source)
+        => new([.. source.Data], source.Width, source.Height);
     public static Array2D<T> From<U>(IList<IList<U>> source, Func<U, T> transform)
         => new(source.Aggregate(Enumerable.Empty<U>(), (a, b) => a.Concat(b)).Select(transform), source[0].Count, source.Count);
     public static Array2D<T> From(IList<IList<T>> source)
@@ -226,6 +241,81 @@ public class Array2D<T> (T[] data, int width, int height)
         => new(source.Aggregate(Enumerable.Empty<char>(), (a, b) => a.Concat(b)).Select(transform), source[0].Length, source.Count);
     public static Array2D<char> From(IList<string> source)
         => new(source.Aggregate(Enumerable.Empty<char>(), (a, b) => a.Concat(b)), source[0].Length, source.Count);
+}
+
+public class BitArray2D(BitArray data, int width, int height) : BaseArray2D<bool>(width, height)
+{
+    private readonly BitArray InternalData = CheckLength(data, (long)width * height);
+
+    public BitArray2D(int width, int height) : this(new BitArray(width * height), width, height) { }
+    public BitArray2D(IEnumerable<bool> data, int width, int height) : this(width, height)
+    {
+        foreach (var (i, item) in data.Take(width * height).Index())
+            InternalData[i] = item;
+    }
+
+    public override bool this[int x, int y]
+    {
+        get => InternalData[x + y * Width];
+        set => InternalData[x + y * Width] = value;
+    }
+
+    private static BitArray CheckLength(BitArray data, long length)
+    {
+        if (data.Length < length)
+            throw new ArgumentException("Array backing data doesn't match dimensions", nameof(data));
+        return data;
+    }
+
+    protected override int FindDataIndex(Predicate<bool> pred, int startAt)
+    {
+        foreach (var (i, item) in Data.Index().Skip(startAt))
+        {
+            if (pred(item))
+                return i;
+        }
+        return -1;
+    }
+
+    public override IEnumerable<bool> Data => InternalData.OfType<bool>();
+
+    protected override int IndexOfData(bool value, int startAt)
+    {
+        foreach (var (i, item) in Data.Index().Skip(startAt))
+        {
+            if (item == value)
+                return i;
+        }
+        return -1;
+    }
+
+    public bool[][] To2DArray()
+        => [.. Enumerable.Range(0, Height).Select(y => Data.Skip(y * Width).Take(Width).ToArray())];
+    public IEnumerable<bool> AsEnumerable(int x, int y, int length)
+        => Data.Skip(x + y * Width).Take(width);
+    public IEnumerable<bool> AsEnumerable(int x, int y)
+        => Data.Skip(x + y * Width).Take(Width - x);
+
+    public static BitArray2D FromSize<U>(BaseArray2D<U> source, bool value)
+        => new(Enumerable.Repeat(value, source.Width * source.Height), source.Width, source.Height);
+    public static BitArray2D From(BitArray2D source, Func<bool, bool> transform)
+        => new(new BitArray(source.InternalData), source.Width, source.Height);
+    public static BitArray2D From<U>(BaseArray2D<U> source, Func<U, bool> transform)
+        => new(source.Data.Select(transform), source.Width, source.Height);
+    public static BitArray2D From(BaseArray2D<bool> source)
+        => new(source.Data, source.Width, source.Height);
+    public static BitArray2D From<U>(IList<IList<U>> source, Func<U, bool> transform)
+        => new(source.Aggregate(Enumerable.Empty<U>(), (a, b) => a.Concat(b)).Select(transform), source[0].Count, source.Count);
+    public static BitArray2D From(IList<IList<bool>> source)
+        => new(source.Aggregate(Enumerable.Empty<bool>(), (a, b) => a.Concat(b)), source[0].Count, source.Count);
+    public static BitArray2D From<U>(IList<U[]> source, Func<U, bool> transform)
+        => new(source.Aggregate(Enumerable.Empty<U>(), (a, b) => a.Concat(b)).Select(transform), source[0].Length, source.Count);
+    public static BitArray2D From(IList<bool[]> source)
+        => new(source.Aggregate(Enumerable.Empty<bool>(), (a, b) => a.Concat(b)), source[0].Length, source.Count);
+    public static BitArray2D From<U>(IList<U>[] source, Func<U, bool> transform)
+        => new(source.Aggregate(Enumerable.Empty<U>(), (a, b) => a.Concat(b)).Select(transform), source[0].Count, source.Length);
+    public static BitArray2D From(IList<bool>[] source)
+        => new(source.Aggregate(Enumerable.Empty<bool>(), (a, b) => a.Concat(b)), source[0].Count, source.Length);
 }
 
 internal class SubArray<T>(T[] baseArray, int offset, int length) : IList<T>, IEnumerable<T>, IList, IEnumerable
