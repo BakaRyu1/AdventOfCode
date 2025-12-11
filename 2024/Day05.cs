@@ -78,8 +78,6 @@ internal class Day05 : DayRunner<Day05.Data>
     public override void Part2(Data data, RunSettings settings)
     {
         var sum = 0;
-        var ordered = 0;
-        var unordered = 0;
         var comparer = Comparer<int>.Create((a, b) =>
         {
             if (data.OrderingRules.TryGetValue(a, out var aRules) && aRules.Contains(b))

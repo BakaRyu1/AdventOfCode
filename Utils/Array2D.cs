@@ -250,7 +250,7 @@ public class BitArray2D(BitArray data, int width, int height) : BaseArray2D<bool
     public BitArray2D(int width, int height) : this(new BitArray(width * height), width, height) { }
     public BitArray2D(IEnumerable<bool> data, int width, int height) : this(width, height)
     {
-        foreach (var (i, item) in data.Take(width * height).Index())
+        foreach (var (i, item) in data.Take(Width * Height).Index())
             InternalData[i] = item;
     }
 
@@ -292,7 +292,7 @@ public class BitArray2D(BitArray data, int width, int height) : BaseArray2D<bool
     public bool[][] To2DArray()
         => [.. Enumerable.Range(0, Height).Select(y => Data.Skip(y * Width).Take(Width).ToArray())];
     public IEnumerable<bool> AsEnumerable(int x, int y, int length)
-        => Data.Skip(x + y * Width).Take(width);
+        => Data.Skip(x + y * Width).Take(length);
     public IEnumerable<bool> AsEnumerable(int x, int y)
         => Data.Skip(x + y * Width).Take(Width - x);
 

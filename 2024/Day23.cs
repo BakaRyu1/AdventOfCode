@@ -1,5 +1,4 @@
 ﻿using AdventOfCode.Utils;
-using System.Diagnostics.CodeAnalysis;
 
 namespace AdventOfCode._2024;
 
@@ -27,7 +26,7 @@ internal class Day23 : DayRunner<(string, string)[]>
     public override void Part1((string, string)[] data, RunSettings settings)
     {
         var allLinks = GetLinks(data);
-        var triplets = new HashSet<string[]>(new ArrayComparer<string>());
+        var triplets = new HashSet<string[]>(ArrayComparer<string>.Instance);
         foreach (var pc in allLinks.Keys)
         {
             var links = allLinks[pc];
@@ -108,25 +107,5 @@ internal class Day23 : DayRunner<(string, string)[]>
             links2.Add(pc1);
         }
         return allLinks;
-    }
-
-    class ArrayComparer<T> : IEqualityComparer<T[]>
-    {
-        public bool Equals(T[]? x, T[]? y)
-        {
-            if (x is null && y is null)
-                return true;
-            if (x is null != y is null)
-                return false;
-            return Enumerable.SequenceEqual(x, y);
-        }
-
-        public int GetHashCode([DisallowNull] T[] obj)
-        {
-            var hashcode = new HashCode();
-            foreach (var item in obj)
-                hashcode.Add(item);
-            return hashcode.ToHashCode();
-        }
     }
 }

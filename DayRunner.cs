@@ -94,6 +94,7 @@ internal abstract partial class DayRunner<T, U> : IDayRunner
             catch (Exception e)
             {
                 Console.WriteLine($"Warning: failed to fetch names for year {year}");
+                Console.WriteLine(e);
                 dayNames = [];
             }
             _names[year] = dayNames;
