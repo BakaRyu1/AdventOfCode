@@ -26,9 +26,9 @@ public abstract class BaseArray2D<T>(int width, int height)
     }
     public override bool Equals(object? obj)
     {
-        if (obj is Array2D<T> other)
-            return Enumerable.SequenceEqual(Data, other.Data);
-        return false;
+        if (obj is not BaseArray2D<T> other)
+            return false;
+        return Width == other.Width && Height == other.Height && Enumerable.SequenceEqual(Data, other.Data);
     }
 
     /*
@@ -154,9 +154,69 @@ public abstract class BaseArray2D<T>(int width, int height)
             index = IndexOfData(value, index + 1);
         }
     }
+
+    public IEnumerable<T> GetRow(int y) => Data.Skip(y * Width).Take(Width);
+    public IEnumerable<T> GetColumn(int x)
+    {
+        for (var y = 0; y < Height; ++y)
+            yield return this[x, y];
+    }
+
+    public void SetRow(int y, IEnumerable<T> data)
+    {
+        foreach (var (x, e) in data.Index().Take(Width))
+            this[x, y] = e;
+    }
+    public void SetColumn(int x, IEnumerable<T> data)
+    {
+        foreach (var (y, e) in data.Index().Take(Height))
+            this[x, y] = e;
+    }
 }
 
-public sealed class Array2D<T>(T[] data, int width, int height) : BaseArray2D<T>(width, height)
+public abstract class BaseArray2D<T, U>(int width, int height) : BaseArray2D<T>(width, height)
+    where U : BaseArray2D<T>
+{
+    protected abstract U Create(int width, int height);
+
+    public U AsTransposed()
+    {
+        var array = Create(Height, Width);
+        foreach (var pos in EnumeratePositions())
+            array[pos.Y, pos.X] = this[pos];
+        return array;
+    }
+    public U AsClockwiseRotated()
+    {
+        var array = Create(Height, Width);
+        foreach (var pos in EnumeratePositions())
+            array[Height - 1 - pos.Y, pos.X] = this[pos];
+        return array;
+    }
+    public U AsCounterClockwiseRotated()
+    {
+        var array = Create(Height, Width);
+        foreach (var pos in EnumeratePositions())
+            array[pos.Y, Width - 1 - pos.X] = this[pos];
+        return array;
+    }
+    public U AsFlippedX()
+    {
+        var array = Create(Height, Width);
+        foreach (var pos in EnumeratePositions())
+            array[Width - 1 - pos.X, pos.Y] = this[pos];
+        return array;
+    }
+    public U AsFlippedY()
+    {
+        var array = Create(Height, Width);
+        foreach (var pos in EnumeratePositions())
+            array[pos.X, Height - 1 - pos.Y] = this[pos];
+        return array;
+    }
+}
+
+public sealed class Array2D<T>(T[] data, int width, int height) : BaseArray2D<T, Array2D<T>>(width, height)
 {
     private readonly T[] InternalData = CheckLength(data, (long)width * height);
     public override T[] Data => InternalData;
@@ -165,6 +225,7 @@ public sealed class Array2D<T>(T[] data, int width, int height) : BaseArray2D<T>
     public Array2D(int width, int height) : this(new T[width * height], width, height) { }
     public Array2D(IEnumerable<T> data, int width, int height) : this([.. data.Take(width * height)], width, height) { }
 
+    protected override Array2D<T> Create(int width, int height) => new(width, height);
     protected override int IndexOfData(T value, int startIndex) => Array.IndexOf(InternalData, value, startIndex);
     protected override int FindDataIndex(Predicate<T> pred, int startIndex) => Array.FindIndex(InternalData, startIndex, pred);
 
@@ -198,14 +259,6 @@ public sealed class Array2D<T>(T[] data, int width, int height) : BaseArray2D<T>
         var newWidth = Math.Max(Width, positionToInclude.X + 1) + shift.X;
         var newHeight = Math.Max(Height, positionToInclude.Y + 1) + shift.Y;
         return AsResized(newWidth, newHeight, shift);
-    }
-
-    public Array2D<T> AsTransposed()
-    {
-        var newArray = new Array2D<T>(Height, Width);
-        foreach (var pos in EnumeratePositions())
-            newArray[pos.Y, pos.X] = this[pos];
-        return newArray;
     }
 
     public T[][] To2DArray()
@@ -243,7 +296,7 @@ public sealed class Array2D<T>(T[] data, int width, int height) : BaseArray2D<T>
         => new(source.Aggregate(Enumerable.Empty<char>(), (a, b) => a.Concat(b)), source[0].Length, source.Count);
 }
 
-public class BitArray2D(BitArray data, int width, int height) : BaseArray2D<bool>(width, height)
+public class BitArray2D(BitArray data, int width, int height) : BaseArray2D<bool, BitArray2D>(width, height)
 {
     private readonly BitArray InternalData = CheckLength(data, (long)width * height);
 
@@ -254,6 +307,7 @@ public class BitArray2D(BitArray data, int width, int height) : BaseArray2D<bool
             InternalData[i] = item;
     }
 
+    protected override BitArray2D Create(int width, int height) => new(width, height);
     public override bool this[int x, int y]
     {
         get => InternalData[x + y * Width];
