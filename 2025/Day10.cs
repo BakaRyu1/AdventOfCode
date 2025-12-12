@@ -1,11 +1,5 @@
 ﻿using AdventOfCode.Utils;
-using System;
-using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AdventOfCode._2025;
 internal partial class Day10 : DayRunner<Day10.Machine[]>
@@ -106,44 +100,30 @@ internal partial class Day10 : DayRunner<Day10.Machine[]>
 
     public override void Part2(Machine[] data, RunSettings settings)
     {
-        /*
         var sum = 0;
         foreach (var (i, machine) in data.Index())
         {
-            int[] bestSequence = [];
-            int bestSequenceLen = int.MaxValue;
-            var queue = new Queue<(int[], int[])>();
-            queue.Enqueue(([..Enumerable.Repeat(0, machine.Buttons.Length)], [.. Enumerable.Repeat(0, machine.LightsCount)]));
-            //var visited = new Dictionary<BitVector32, int>();
-            
-            while (queue.Count > 0)
+            if (settings.Verbose)
+                Console.WriteLine($"Machine {i}:");
+            int[] bestButtons = [];
+            int bestScore = int.MaxValue;
+            var cache = new Dictionary<int[], int[][]>(ArrayComparer<int>.Instance);
+            var transitions = GenerateTransitions(machine, new());
+            foreach (var buttons in GetButtonsForJoltage(machine, machine.Joltages, transitions, cache))
             {
-                var (buttons, joltages) = queue.Dequeue();
-                if (Enumerable.Range(0, machine.LightsCount).All(i => joltages[i] == machine.Joltages[i]))
+                var score = buttons.Aggregate((a, b) => a + b);
+                if (score < bestScore)
                 {
-                    bestSequenceLen = buttons.Length;
-                    bestSequence = buttons;
+                    if (settings.Verbose)
+                        Console.WriteLine($"{string.Join(',', buttons)} => {score} presses");
+                    bestScore = score;
+                    bestButtons = buttons;
                     continue;
                 }
-                //if (visited.TryGetValue(lightState, out var len) && len < buttons.Length)
-                //    continue;
-                //visited[lightState] = buttons.Length;
-                foreach (var (j, button) in machine.Buttons.Index())
-                {
-                    //if (!IsRelated(button, machine.Lights, lightState))
-                    //    continue;
-                    int[] newJoltages = UpdateJoltages(joltages, button);
-                    if (!IsJoltageValid(newJoltages, machine))
-                        continue;
-                    queue.Enqueue(([.. buttons, j], newJoltages));
-                }
             }
-            if (settings.Verbose)
-                Console.WriteLine($"Machine {i}: {string.Join(',', bestSequence)}");
-            sum += bestSequenceLen;
+            sum += bestScore;
         }
         Console.WriteLine($"Minimum button presses required is {sum}");
-        */
     }
 
     private static BitVector32 IntsToVector(IEnumerable<int> ints)
@@ -154,9 +134,55 @@ internal partial class Day10 : DayRunner<Day10.Machine[]>
         return vector;
     }
 
+    private static BitVector32 ExtractFirstBit(IEnumerable<int> joltages)
+    {
+        var vector = new BitVector32();
+        foreach (var (i, num) in joltages.Index())
+        {
+            if ((num % 2) == 1)
+                vector[1 << i] = true;
+        }
+        return vector;
+    }
+
+    private static IEnumerable<int[]> GetButtonsForJoltage(Machine machine, int[] joltages, Dictionary<BitVector32, List<(int[], int[])>> transitions, Dictionary<int[], int[][]> cache)
+    {
+        if (joltages.All(j => j == 0))
+        {
+            yield return Enumerable.Repeat(0, machine.Buttons.Length).ToArray();
+            yield break;
+        }
+        if (cache.TryGetValue(joltages, out var cachedResult))
+        {
+            foreach (var buttons in cachedResult)
+                yield return buttons;
+            yield break;
+        }
+        var target = ExtractFirstBit(joltages);
+        var result = new List<int[]>();
+        if (transitions.TryGetValue(target, out var solutions))
+        {
+            foreach (var (buttons, buttonsJoltage) in solutions)
+            {
+                int[] newJoltages = [.. joltages.Zip(buttonsJoltage).Select(pair => pair.First - pair.Second)];
+                if (newJoltages.Any(j => j < 0))
+                    continue;
+                for (var j = 0; j < newJoltages.Length; ++j)
+                    newJoltages[j] >>>= 1;
+                foreach (var buttons2 in GetButtonsForJoltage(machine, newJoltages, transitions, cache))
+                {
+                    int[] buttons3 = [.. buttons.Zip(buttons2).Select(pair => pair.First + pair.Second * 2)];
+                    yield return buttons3;
+                    result.Add(buttons3);
+                }
+            }
+        }
+        cache[joltages] = [.. result];
+    }
+
     private static int[] CalculateJoltages(Machine machine, int[] buttons)
     {
-        int[] joltages = [.. Enumerable.Repeat(0, machine.LightsCount)];
+        var joltages = new int[machine.LightsCount];
         for (var i = 0; i < buttons.Length; ++i)
         {
             var button = machine.Buttons[i];
@@ -168,27 +194,7 @@ internal partial class Day10 : DayRunner<Day10.Machine[]>
         }
         return joltages;
     }
-    private static int[] UpdateJoltages(int[] joltages, Button button)
-    {
-        int[] newJoltages = [.. joltages];
-        for (var i = 0; i < joltages.Length; ++i)
-        {
-            if (button.Lights[1 << i])
-                ++newJoltages[i];
-        }
-        return newJoltages;
-    }
-    private static int[] UpdateJoltages(int[] joltages, int[] otherJoltages)
-    {
-        int[] newJoltages = [.. joltages];
-        for (var i = 0; i < joltages.Length; ++i)
-            newJoltages[i] += otherJoltages[i];
-        return newJoltages;
-    }
-    private static bool IsJoltageValid(int[] joltages, Machine machine)
-        => Enumerable.Range(0, machine.LightsCount).All(i => joltages[i] <= machine.Joltages[i]);
-
-    public static IEnumerable<(int[], BitVector32)> GenerateButtons(IEnumerable<Button> buttons, BitVector32 initialState)
+    private static IEnumerable<(int[], BitVector32)> GenerateButtons(IEnumerable<Button> buttons, BitVector32 initialState)
     {
         if (!buttons.Any())
         {
@@ -200,5 +206,16 @@ internal partial class Day10 : DayRunner<Day10.Machine[]>
         var activeState = new BitVector32(initialState.Data ^ buttons.First().Lights.Data);
         foreach (var (subSequence, state) in GenerateButtons(buttons.Skip(1), activeState))
             yield return ([1, .. subSequence], state);
+    }
+    private static Dictionary<BitVector32, List<(int[] buttons, int[] joltages)>> GenerateTransitions(Machine machine, BitVector32 initialState)
+    {
+        var result = new Dictionary<BitVector32, List<(int[], int[])>>();
+        foreach (var (buttons, state) in GenerateButtons(machine.Buttons, initialState))
+        {
+            if (!result.TryGetValue(state, out var list))
+                result[state] = list = [];
+            list.Add((buttons, CalculateJoltages(machine, buttons)));
+        }
+        return result;
     }
 }
